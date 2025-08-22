@@ -7,7 +7,7 @@ order: 4
 <!-- >> Add Markdown syntax content to file `_tabs/about.md`{: .filepath } and it will show up on this page.
 {: .prompt-tip } -->
 
-I'm Anthony Perstin, and I'm passionate about Detection Engineering, Threat Hunting, and Cyber Threat Intelligence (DEaTH+CTI).
+I'm Anthony Perstin, and I'm passionate about Detection Engineering, Threat Hunting, and Cyber Threat Intelligence (DEaTH + CTI).
 
 In this blog site, I talk about how we can leverage OSINT to hunt for threats relevant to our organizations and build custom detections.
 
