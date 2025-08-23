@@ -1,13 +1,39 @@
-<!-- Prism core + Kusto (no line-numbers plugin) -->
-<!-- Dark mode -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs/themes/prism-okaidia.min.css"
+<!-- Dark-only Prism theme -->
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/prismjs/themes/prism-okaidia.min.css"
       media="(prefers-color-scheme: dark)">
+
+<!-- Run Prism manually so iOS Safari waits for the Kusto component -->
+<script>
+  window.Prism = window.Prism || {};
+  window.Prism.manual = true;
+</script>
+
+<!-- Prism core + Kusto component -->
 <script defer src="https://cdn.jsdelivr.net/npm/prismjs/prism.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/prismjs/components/prism-kusto.min.js"></script>
 
-<!-- Optional: let ```kql also work -->
-<script defer>
+<!-- After DOM & Kusto are ready, alias kql and highlight -->
+<script>
   document.addEventListener('DOMContentLoaded', () => {
-    if (window.Prism && Prism.languages.kusto) Prism.languages.kql = Prism.languages.kusto;
+    function ready() {
+      if (window.Prism && Prism.languages && Prism.languages.kusto) {
+        Prism.languages.kql = Prism.languages.kusto; // allow ```kql fences
+        Prism.highlightAll();
+      } else {
+        setTimeout(ready, 50);
+      }
+    }
+    ready();
   });
 </script>
+
+<style>
+:root[data-bs-theme="dark"] pre[class*="language-"],
+:root[data-bs-theme="dark"] code[class*="language-"] {
+  background: var(--card-bg, #1b1b1e) !important;
+  color: var(--text-color, #e6e6e6) !important;
+  border: 1px solid var(--border-color, rgba(255,255,255,0.12));
+  border-radius: .5rem;
+}
+</style>
