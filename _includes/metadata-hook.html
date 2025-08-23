@@ -1,36 +1,44 @@
 <!-- Prism CSS for BOTH OS themes -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs/themes/prism.min.css"
+<link rel="stylesheet"
+      href="{{ '/assets/vendor/prism/prism.min.css' | relative_url }}"
       media="(prefers-color-scheme: light)">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs/themes/prism-okaidia.min.css"
+<link rel="stylesheet"
+      href="{{ '/assets/vendor/prism/prism-okaidia.min.css' | relative_url }}"
       media="(prefers-color-scheme: dark)">
 
-<!-- Run Prism manually so iOS Safari waits for the Kusto component -->
+<!-- Run Prism manually so slow/mobile/iOS waits for Kusto -->
 <script>
   window.Prism = window.Prism || {};
   window.Prism.manual = true;
 </script>
 
-<!-- Prism core + Kusto component -->
-<script defer src="https://cdn.jsdelivr.net/npm/prismjs/prism.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/prismjs/components/prism-kusto.min.js"></script>
+<!-- Prism core + Kusto (self-hosted, same-origin so Worker can version) -->
+<script defer src="{{ '/assets/vendor/prism/prism.min.js' | relative_url }}"></script>
+<script defer src="{{ '/assets/vendor/prism/prism-kusto.min.js' | relative_url }}"></script>
 
 <!-- After DOM & Kusto are ready, alias kql and highlight -->
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    function ready() {
-      if (window.Prism && Prism.languages && Prism.languages.kusto) {
-        Prism.languages.kql = Prism.languages.kusto; // allow ```kql fences
-        Prism.highlightAll();
-      } else {
-        setTimeout(ready, 50);
+(function () {
+  function run() {
+    if (window.Prism && Prism.languages && (Prism.languages.kusto || Prism.languages.kql)) {
+      if (Prism.languages.kusto && !Prism.languages.kql) {
+        Prism.languages.kql = Prism.languages.kusto; // allow ```kql
       }
+      Prism.highlightAll();
+      return;
     }
-    ready();
-  });
+    setTimeout(run, 80);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', run);
+  } else {
+    run();
+  }
+})();
 </script>
 
 <style>
-/* match site dark background, regardless of OS */
+/* Match site dark theme even if OS is light */
 :root[data-bs-theme="dark"] pre[class*="language-"],
 :root[data-bs-theme="dark"] code[class*="language-"] {
   background: var(--card-bg, #1b1b1e) !important;
@@ -38,8 +46,7 @@
   border: 1px solid var(--border-color, rgba(255,255,255,0.12));
   border-radius: .5rem;
 }
-
-/* remove the pill/box styling on pipes and equals, but let Prism set colors */
+/* Remove operator “chips” */
 pre[class*="language-"] .token.operator,
 pre[class*="language-"] .token.punctuation {
   background: none !important;
@@ -48,8 +55,7 @@ pre[class*="language-"] .token.punctuation {
   padding: 0 !important;
   border-radius: 0 !important;
 }
-
-/* avoid ligature weirdness */
+/* Avoid ligature weirdness on Windows fonts */
 pre[class*="language-"], code[class*="language-"] {
   font-variant-ligatures: none;
 }
