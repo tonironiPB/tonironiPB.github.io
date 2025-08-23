@@ -1,0 +1,11 @@
+<!-- Prism core + Kusto (no line-numbers plugin) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs/themes/prism.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs/prism.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs/components/prism-kusto.min.js"></script>
+
+<!-- Optional: let ```kql also work -->
+<script defer>
+  document.addEventListener('DOMContentLoaded', () => {
+    if (window.Prism && Prism.languages.kusto) Prism.languages.kql = Prism.languages.kusto;
+  });
+</script>
