@@ -1,62 +1,13 @@
-<!-- Prism CSS for BOTH OS themes -->
-<link rel="stylesheet"
-      href="{{ '/assets/vendor/prism/prism.min.css' | relative_url }}"
-      media="(prefers-color-scheme: light)">
-<link rel="stylesheet"
-      href="{{ '/assets/vendor/prism/prism-okaidia.min.css' | relative_url }}"
+<!-- Prism core + Kusto (no line-numbers plugin) -->
+<!-- Dark mode -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs/themes/prism-okaidia.min.css"
       media="(prefers-color-scheme: dark)">
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs/prism.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs/components/prism-kusto.min.js"></script>
 
-<!-- Run Prism manually so slow/mobile/iOS waits for Kusto -->
-<script>
-  window.Prism = window.Prism || {};
-  window.Prism.manual = true;
+<!-- Optional: let ```kql also work -->
+<script defer>
+  document.addEventListener('DOMContentLoaded', () => {
+    if (window.Prism && Prism.languages.kusto) Prism.languages.kql = Prism.languages.kusto;
+  });
 </script>
-
-<!-- Prism core + Kusto (self-hosted, same-origin so Worker can version) -->
-<script defer src="{{ '/assets/vendor/prism/prism.min.js' | relative_url }}"></script>
-<script defer src="{{ '/assets/vendor/prism/prism-kusto.min.js' | relative_url }}"></script>
-
-<!-- After DOM & Kusto are ready, alias kql and highlight -->
-<script>
-(function () {
-  function run() {
-    if (window.Prism && Prism.languages && (Prism.languages.kusto || Prism.languages.kql)) {
-      if (Prism.languages.kusto && !Prism.languages.kql) {
-        Prism.languages.kql = Prism.languages.kusto; // allow ```kql
-      }
-      Prism.highlightAll();
-      return;
-    }
-    setTimeout(run, 80);
-  }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', run);
-  } else {
-    run();
-  }
-})();
-</script>
-
-<style>
-/* Match site dark theme even if OS is light */
-:root[data-bs-theme="dark"] pre[class*="language-"],
-:root[data-bs-theme="dark"] code[class*="language-"] {
-  background: var(--card-bg, #1b1b1e) !important;
-  color: var(--text-color, #e6e6e6) !important;
-  border: 1px solid var(--border-color, rgba(255,255,255,0.12));
-  border-radius: .5rem;
-}
-/* Remove operator “chips” */
-pre[class*="language-"] .token.operator,
-pre[class*="language-"] .token.punctuation {
-  background: none !important;
-  box-shadow: none !important;
-  text-shadow: none !important;
-  padding: 0 !important;
-  border-radius: 0 !important;
-}
-/* Avoid ligature weirdness on Windows fonts */
-pre[class*="language-"], code[class*="language-"] {
-  font-variant-ligatures: none;
-}
-</style>
