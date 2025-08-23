@@ -1,6 +1,7 @@
-<!-- Dark-only Prism theme -->
-<link rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/prismjs/themes/prism-okaidia.min.css"
+<!-- Prism CSS for BOTH OS themes -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs/themes/prism.min.css"
+      media="(prefers-color-scheme: light)">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs/themes/prism-okaidia.min.css"
       media="(prefers-color-scheme: dark)">
 
 <!-- Run Prism manually so iOS Safari waits for the Kusto component -->
@@ -29,11 +30,27 @@
 </script>
 
 <style>
+/* match site dark background, regardless of OS */
 :root[data-bs-theme="dark"] pre[class*="language-"],
 :root[data-bs-theme="dark"] code[class*="language-"] {
   background: var(--card-bg, #1b1b1e) !important;
   color: var(--text-color, #e6e6e6) !important;
   border: 1px solid var(--border-color, rgba(255,255,255,0.12));
   border-radius: .5rem;
+}
+
+/* remove the pill/box styling on pipes and equals, but let Prism set colors */
+pre[class*="language-"] .token.operator,
+pre[class*="language-"] .token.punctuation {
+  background: none !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+}
+
+/* avoid ligature weirdness */
+pre[class*="language-"], code[class*="language-"] {
+  font-variant-ligatures: none;
 }
 </style>
