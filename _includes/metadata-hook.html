@@ -1,17 +1,39 @@
 <!-- Ask Dark Reader not to modify this site -->
 <meta name="darkreader-lock">
 
-<!-- Prism core + Kusto (no line-numbers plugin) -->
-<!-- Dark mode -->
-<link rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/prism-themes/themes/prism-dracula.min.css"
+<!-- Prism CSS for BOTH OS modes -->
+<link rel="stylesheet" href="{{ '/assets/vendor/prism/prism.min.css' | relative_url }}"
+      media="(prefers-color-scheme: light)">
+<link rel="stylesheet" href="{{ '/assets/vendor/prism/prism-dracula.min.css' | relative_url }}"
       media="(prefers-color-scheme: dark)">
-<script defer src="https://cdn.jsdelivr.net/npm/prismjs/prism.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/prismjs/components/prism-kusto.min.js"></script>
 
-<!-- Optional: let ```kql also work -->
-<script defer>
-  document.addEventListener('DOMContentLoaded', () => {
-    if (window.Prism && Prism.languages.kusto) Prism.languages.kql = Prism.languages.kusto;
-  });
+<!-- Run Prism manually; trigger after Kusto is present -->
+<script>
+  window.Prism = window.Prism || {};
+  window.Prism.manual = true;
+</script>
+
+<!-- Self-hosted JS (same-origin avoids blockers) -->
+<script defer src="{{ '/assets/vendor/prism/prism.min.js' | relative_url }}"></script>
+<script defer src="{{ '/assets/vendor/prism/components/prism-kusto.min.js' | relative_url }}"></script>
+
+<!-- After DOM & Kusto are ready, alias kql and highlight -->
+<script>
+(function () {
+  function start() {
+    if (window.Prism && Prism.languages && (Prism.languages.kusto || Prism.languages.kql)) {
+      if (Prism.languages.kusto && !Prism.languages.kql) {
+        Prism.languages.kql = Prism.languages.kusto; // allow ```kql fences
+      }
+      Prism.highlightAll();
+      return;
+    }
+    setTimeout(start, 80);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start);
+  } else {
+    start();
+  }
+})();
 </script>
