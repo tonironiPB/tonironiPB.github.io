@@ -2,9 +2,9 @@
 <meta name="darkreader-lock">
 
 <!-- Prism CSS for BOTH OS modes -->
-<link rel="stylesheet" href="{{ '/assets/vendor/prism/prism.min.css' | relative_url }}"
+<link rel="stylesheet" href="{{ '/assets/lib/prism/prism.min.css' | relative_url }}"
       media="(prefers-color-scheme: light)">
-<link rel="stylesheet" href="{{ '/assets/vendor/prism/prism-dracula.min.css' | relative_url }}"
+<link rel="stylesheet" href="{{ '/assets/lib/prism/prism-dracula.min.css' | relative_url }}"
       media="(prefers-color-scheme: dark)">
 
 <!-- Run Prism manually; trigger after Kusto is present -->
@@ -14,8 +14,8 @@
 </script>
 
 <!-- Self-hosted JS (same-origin avoids blockers) -->
-<script defer src="{{ '/assets/vendor/prism/prism.min.js' | relative_url }}"></script>
-<script defer src="{{ '/assets/vendor/prism/components/prism-kusto.min.js' | relative_url }}"></script>
+<script defer src="{{ '/assets/lib/prism/prism.min.js' | relative_url }}"></script>
+<script defer src="{{ '/assets/lib/prism/components/prism-kusto.min.js' | relative_url }}"></script>
 
 <!-- After DOM & Kusto are ready, alias kql and highlight -->
 <script>
