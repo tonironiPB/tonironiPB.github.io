@@ -1,17 +1,82 @@
 <!-- Ask Dark Reader not to modify this site -->
 <meta name="darkreader-lock">
 
-<!-- Prism core + Kusto (no line-numbers plugin) -->
-<!-- Dark mode -->
+<!-- Prism Dracula (primary CSS) -->
 <link rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/prism-themes/themes/prism-dracula.min.css"
-      media="(prefers-color-scheme: dark)">
-<script defer src="https://cdn.jsdelivr.net/npm/prismjs/prism.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/prismjs/components/prism-kusto.min.js"></script>
+      href="https://cdn.jsdelivr.net/npm/prism-themes/themes/prism-dracula.min.css">
 
-<!-- Optional: let ```kql also work -->
-<script defer>
-  document.addEventListener('DOMContentLoaded', () => {
-    if (window.Prism && Prism.languages.kusto) Prism.languages.kql = Prism.languages.kusto;
-  });
+<script>
+  // Prism will not auto-run; we will run it after Kusto is loaded
+  window.Prism = window.Prism || {};
+  window.Prism.manual = true;
+
+  (function () {
+    const cdn1 = 'https://cdn.jsdelivr.net/npm/prismjs@latest';
+    const cdn2 = 'https://unpkg.com/prismjs@latest';
+    const paths = {
+      core: '/prism.min.js',
+      kusto: '/components/prism-kusto.min.js'
+    };
+    const local = {
+      core:  '{{ "/assets/prism_fallback/prism.min.js" | relative_url }}',
+      kusto: '{{ "/assets/prism_fallback/prism-kusto.min.js" | relative_url }}',
+      css:   '{{ "/assets/prism_fallback/prism-dracula.min.css" | relative_url }}'
+    };
+
+    function addScript(src) {
+      return new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = src; s.defer = true;
+        s.onload = resolve; s.onerror = reject;
+        document.head.appendChild(s);
+      });
+    }
+
+    function addCSSOnce(href) {
+      if (document.querySelector(`link[data-prism-css="${href}"]`)) return;
+      const l = document.createElement('link');
+      l.rel = 'stylesheet';
+      l.href = href;
+      l.setAttribute('data-prism-css', href);
+      document.head.appendChild(l);
+    }
+
+    async function loadWithFallback() {
+      // Ensure CSS present; if primary is blocked, we’ll inject local later
+      addCSSOnce('https://cdn.jsdelivr.net/npm/prism-themes/themes/prism-dracula.min.css');
+
+      // Core (try jsDelivr → unpkg → local)
+      const coreTries = [
+        () => addScript(cdn1 + paths.core),
+        () => addScript(cdn2 + paths.core),
+        () => addScript(local.core)
+      ];
+      for (const t of coreTries) { try { await t(); break; } catch(e){} }
+
+      // Kusto component (try jsDelivr → unpkg → local)
+      const kustoTries = [
+        () => addScript(cdn1 + paths.kusto),
+        () => addScript(cdn2 + paths.kusto),
+        () => addScript(local.kusto)
+      ];
+      for (const t of kustoTries) { try { await t(); break; } catch(e){} }
+
+      // Alias kql → kusto and highlight
+      if (window.Prism && Prism.languages) {
+        if (Prism.languages.kusto && !Prism.languages.kql) {
+          Prism.languages.kql = Prism.languages.kusto;
+        }
+        Prism.highlightAll();
+      } else {
+        // If even CSS was blocked, try local CSS too
+        addCSSOnce(local.css);
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadWithFallback);
+    } else {
+      loadWithFallback();
+    }
+  })();
 </script>
