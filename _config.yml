@@ -157,8 +157,8 @@ baseurl: ""
 
 highlighter: none
 kramdown:
-  footnote_backlink: "&#8617;&#xfe0e;"
-  # syntax_highlighter: rouge
+  # footnote_backlink: "&#8617;&#xfe0e;"
+  syntax_highlighter: nil    # rouge
   syntax_highlighter_opts: # Rouge Options › https://github.com/jneen/rouge#full-options
     disable: true
     # css_class: highlight
