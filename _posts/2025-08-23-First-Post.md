@@ -13,7 +13,7 @@ My goal with this website is to share Threat Hunting, Detection Engineering, and
 
 A shotout to my good friend <a href="https://www.pjstaley.com/" target="_blank" rel="noopener noreferrer">Paul Staley</a> for motivating me to start my own blog site and my old college friend <a href="https://www.cipherbuu.net/" target="_blank" rel="noopener noreferrer">Ethan Tomford</a> for (indirectly) exposing this theme to me.
 
-If you'd like to contact me, my socials are in the bottom left. 
+If you'd like to connect, my socials are in the bottom left. 
 
 Stay tuned for more to come!
 
