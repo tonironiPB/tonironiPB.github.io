@@ -15,7 +15,7 @@ A shotout to my good friend <a href="https://www.pjstaley.com/" target="_blank" 
 
 If you'd like to connect, my socials are in the bottom left.
 
-Furthermore, if you prefer light mode over the default dark mode on this site, the toggle is also in the bottom left.
+Furthermore, if you'd like to change the website theme between dark and light mode, the toggle is also in the bottom left.
 
 Stay tuned for more to come!
 
