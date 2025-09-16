@@ -1,8 +1,7 @@
-<!-- Complete metadata-hook.html file - Copy this ENTIRE file -->
+<!-- Minification-safe version of metadata-hook.html -->
 <meta name="darkreader-lock">
 
 <style>
-/* ===== Main Code Block Container ===== */
 .custom-code-block {
   position: relative;
   margin: 1.5rem 0;
@@ -14,7 +13,6 @@
   line-height: 1.5;
 }
 
-/* ===== Header Bar with Controls ===== */
 .code-header {
   position: relative;
   height: 2.5rem;
@@ -25,7 +23,6 @@
   padding: 0 1rem;
 }
 
-/* Traffic lights on the left */
 .traffic-lights {
   position: absolute;
   left: 0.5rem;
@@ -49,7 +46,6 @@
 .dot.yellow { background: #ffbd2e; }
 .dot.green { background: #28ca42; }
 
-/* Language label in the center */
 .lang-label {
   color: rgba(248, 248, 242, 0.5);
   font-size: 0.8rem;
@@ -57,7 +53,6 @@
   letter-spacing: 0.025em;
 }
 
-/* Copy button on the right */
 .copy-btn {
   position: absolute;
   right: 0.5rem;
@@ -79,7 +74,6 @@
   color: rgba(248, 248, 242, 0.8);
 }
 
-/* Both icons are always present, but only one is visible */
 .copy-btn svg {
   width: 16px;
   height: 16px;
@@ -87,7 +81,6 @@
   transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
-/* Default state: show copy icon, hide check */
 .copy-btn .copy-icon {
   opacity: 1;
   transform: scale(1) rotate(0deg);
@@ -99,7 +92,6 @@
   color: #50fa7b;
 }
 
-/* Copied state: hide copy icon, show check with animation */
 .copy-btn.copied .copy-icon {
   opacity: 0;
   transform: scale(0.5) rotate(90deg);
@@ -114,7 +106,6 @@
   color: #50fa7b;
 }
 
-/* Add a subtle bounce effect to the checkmark appearance */
 @keyframes subtle-bounce {
   0% {
     transform: scale(0.5) rotate(-90deg);
@@ -131,14 +122,12 @@
   animation: subtle-bounce 0.4s ease-out;
 }
 
-/* ===== Code Display Area ===== */
 .code-container {
   position: relative;
   overflow-x: auto;
   overflow-y: hidden;
 }
 
-/* Pre element styling */
 .code-pre {
   margin: 0;
   padding: 0;
@@ -147,7 +136,6 @@
   counter-reset: line;
 }
 
-/* Code element with line numbers */
 .code-content {
   display: block;
   padding: 0.5rem 1rem 1rem 2.2rem;
@@ -158,7 +146,6 @@
   font-size: inherit;
 }
 
-/* Line numbers using CSS counters on each line */
 .code-line {
   position: relative;
   display: block;
@@ -180,12 +167,10 @@
   padding-right: 0.5rem;
 }
 
-/* Empty lines need special handling */
 .code-line:empty::after {
   content: '\00a0';
 }
 
-/* ===== Syntax Highlighting Colors ===== */
 .hl-keyword { 
   color: #C792EA;
   font-weight: 500;
@@ -214,7 +199,6 @@
   color: #AABFC9;
 }
 
-/* ===== Light Theme Support ===== */
 [data-theme="light"] .custom-code-block {
   background: #f8f8f8;
 }
@@ -249,248 +233,257 @@
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Process all code blocks
-  function processCodeBlocks() {
-    document.querySelectorAll('pre > code').forEach(function(codeElement) {
-      // Skip if already processed
-      if (codeElement.closest('.custom-code-block')) return;
-      
-      // Get the code text and language
-      const codeText = codeElement.textContent;
-      const langClass = Array.from(codeElement.classList)
-        .find(cls => cls.startsWith('language-')) || 'language-text';
-      const language = langClass.replace('language-', '').toLowerCase();
-      
-      // Split into lines
-      const lines = codeText.split('\n');
-      // Remove trailing empty line if present
-      if (lines[lines.length - 1] === '') {
-        lines.pop();
-      }
-      
-      // Create wrapper
-      const wrapper = document.createElement('div');
-      wrapper.className = 'custom-code-block';
-      
-      // Create header
-      const header = document.createElement('div');
-      header.className = 'code-header';
-      
-      const trafficLights = document.createElement('div');
-      trafficLights.className = 'traffic-lights';
-      trafficLights.innerHTML = `
-        <span class="dot red"></span>
-        <span class="dot yellow"></span>
-        <span class="dot green"></span>
-      `;
-      
-      const langLabel = document.createElement('span');
-      langLabel.className = 'lang-label';
-      langLabel.textContent = '</> ' + formatLanguage(language);
-      
-      const copyBtn = document.createElement('button');
-      copyBtn.type = 'button';
-      copyBtn.className = 'copy-btn';
-      copyBtn.setAttribute('aria-label', 'Copy code');
-      
-      // Pre-create both icons inside the button to avoid innerHTML changes later
-      copyBtn.innerHTML = `
-        <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-        </svg>
-        <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>
-      `;
-      
-      header.appendChild(trafficLights);
-      header.appendChild(langLabel);
-      header.appendChild(copyBtn);
-      
-      // Create code container
-      const container = document.createElement('div');
-      container.className = 'code-container';
-      
-      const pre = document.createElement('pre');
-      pre.className = 'code-pre';
-      
-      const code = document.createElement('code');
-      code.className = 'code-content ' + langClass;
-      
-      // Process each line
-      lines.forEach(function(line) {
-        const lineDiv = document.createElement('div');
-        lineDiv.className = 'code-line';
-        
-        // Apply syntax highlighting for KQL
-        if (language === 'kql' || language === 'kusto') {
-          highlightLine(line, lineDiv);
-        } else {
-          lineDiv.textContent = line;
-        }
-        
-        code.appendChild(lineDiv);
-      });
-      
-      // Assemble
-      pre.appendChild(code);
-      container.appendChild(pre);
-      wrapper.appendChild(header);
-      wrapper.appendChild(container);
-      
-      // Replace original
-      const originalPre = codeElement.parentElement;
-      originalPre.parentElement.replaceChild(wrapper, originalPre);
-      
-      // Copy functionality - Visual icon swap without DOM changes
-      copyBtn.addEventListener('click', async function(e) {
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        
-        // Try modern clipboard API first
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          try {
-            await navigator.clipboard.writeText(codeText);
-            
-            // Show checkmark by adding class (no DOM changes)
-            copyBtn.classList.add('copied');
-            
-            // Revert after 2 seconds
-            setTimeout(() => {
-              copyBtn.classList.remove('copied');
-            }, 2000);
-            
-          } catch (err) {
-            console.warn('Copy failed, trying fallback:', err);
-            fallbackCopyMinimal();
-          }
-        } else {
-          fallbackCopyMinimal();
-        }
-        
-        function fallbackCopyMinimal() {
-          // Create textarea completely outside viewport
-          const textarea = document.createElement('textarea');
-          textarea.value = codeText;
-          textarea.style.position = 'fixed';
-          textarea.style.top = '-9999px';
-          textarea.style.left = '-9999px';
-          textarea.setAttribute('aria-hidden', 'true');
-          textarea.setAttribute('tabindex', '-1');
-          
-          document.body.appendChild(textarea);
-          
-          // Select and copy
-          textarea.select();
-          textarea.setSelectionRange(0, textarea.value.length);
-          
-          try {
-            document.execCommand('copy');
-            
-            // Show success
-            copyBtn.classList.add('copied');
-            setTimeout(() => {
-              copyBtn.classList.remove('copied');
-            }, 2000);
-            
-          } catch (err) {
-            console.error('Copy failed:', err);
-          }
-          
-          // Remove textarea immediately
-          document.body.removeChild(textarea);
-        }
-        
-        return false;
-      });
-    });
+(function() {
+  'use strict';
+  
+  function init() {
+    var codeBlocks = document.querySelectorAll('pre > code');
+    if (!codeBlocks || codeBlocks.length === 0) return;
+    
+    for (var i = 0; i < codeBlocks.length; i++) {
+      processCodeBlock(codeBlocks[i]);
+    }
   }
   
-  // KQL syntax highlighting using DOM manipulation
-  function highlightLine(text, container) {
-    // KQL keywords
-    const keywords = new Set([
-      'where', 'extend', 'project', 'summarize', 'by', 'in', 'contains',
-      'has_any', 'and', 'or', 'not', 'let', 'join', 'on', 'union',
-      'parse_json', 'tostring', 'toint', 'todouble', 'tobool', 'toscalar',
-      'distinct', 'top', 'sort', 'limit', 'take', 'count', 'as'
-    ]);
+  function processCodeBlock(codeElement) {
+    if (codeElement.closest('.custom-code-block')) return;
     
-    // Token patterns
-    const tokenPatterns = [
-      { regex: /\/\/.*$/, class: 'hl-comment' },
-      { regex: /"[^"]*"|'[^']*'/, class: 'hl-string' },
-      { regex: /\b\d+\.?\d*\b/, class: 'hl-number' },
-      { regex: /[=<>!]+|[|&]+|[+\-*/%]/, class: 'hl-operator' },
-      { regex: /[{}()\[\],;]/, class: 'hl-punctuation' },
-      { regex: /\b[a-zA-Z_][a-zA-Z0-9_]*\b/, class: null } // Words - check if keyword/function
-    ];
+    var codeText = codeElement.textContent || '';
+    var classes = codeElement.className || '';
+    var langMatch = classes.match(/language-([^\s]+)/);
+    var language = langMatch ? langMatch[1].toLowerCase() : 'text';
     
-    let position = 0;
+    var lines = codeText.split('\n');
+    if (lines[lines.length - 1] === '') {
+      lines.pop();
+    }
     
-    while (position < text.length) {
-      let matched = false;
+    var wrapper = document.createElement('div');
+    wrapper.className = 'custom-code-block';
+    
+    var header = document.createElement('div');
+    header.className = 'code-header';
+    
+    var trafficLights = document.createElement('div');
+    trafficLights.className = 'traffic-lights';
+    
+    var dotRed = document.createElement('span');
+    dotRed.className = 'dot red';
+    var dotYellow = document.createElement('span');
+    dotYellow.className = 'dot yellow';
+    var dotGreen = document.createElement('span');
+    dotGreen.className = 'dot green';
+    
+    trafficLights.appendChild(dotRed);
+    trafficLights.appendChild(dotYellow);
+    trafficLights.appendChild(dotGreen);
+    
+    var langLabel = document.createElement('span');
+    langLabel.className = 'lang-label';
+    langLabel.textContent = '</> ' + formatLanguage(language);
+    
+    var copyBtn = document.createElement('button');
+    copyBtn.type = 'button';
+    copyBtn.className = 'copy-btn';
+    copyBtn.setAttribute('aria-label', 'Copy code');
+    
+    var copyIcon = '<svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">';
+    copyIcon += '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>';
+    copyIcon += '<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>';
+    copyIcon += '</svg>';
+    
+    var checkIcon = '<svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">';
+    checkIcon += '<polyline points="20 6 9 17 4 12"></polyline>';
+    checkIcon += '</svg>';
+    
+    copyBtn.innerHTML = copyIcon + checkIcon;
+    
+    header.appendChild(trafficLights);
+    header.appendChild(langLabel);
+    header.appendChild(copyBtn);
+    
+    var container = document.createElement('div');
+    container.className = 'code-container';
+    
+    var pre = document.createElement('pre');
+    pre.className = 'code-pre';
+    
+    var code = document.createElement('code');
+    code.className = 'code-content ' + 'language-' + language;
+    
+    for (var j = 0; j < lines.length; j++) {
+      var lineDiv = document.createElement('div');
+      lineDiv.className = 'code-line';
       
-      // Try each pattern
-      for (const pattern of tokenPatterns) {
-        const substring = text.substring(position);
-        const match = substring.match(pattern.regex);
+      if (language === 'kql' || language === 'kusto') {
+        highlightKQLLine(lines[j], lineDiv);
+      } else {
+        lineDiv.textContent = lines[j];
+      }
+      
+      code.appendChild(lineDiv);
+    }
+    
+    pre.appendChild(code);
+    container.appendChild(pre);
+    wrapper.appendChild(header);
+    wrapper.appendChild(container);
+    
+    var originalPre = codeElement.parentElement;
+    if (originalPre && originalPre.parentElement) {
+      originalPre.parentElement.replaceChild(wrapper, originalPre);
+    }
+    
+    setupCopyButton(copyBtn, codeText);
+  }
+  
+  function setupCopyButton(btn, text) {
+    btn.onclick = function(e) {
+      e.preventDefault();
+      
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function() {
+          showCopied(btn);
+        }, function() {
+          fallbackCopy(text, btn);
+        });
+      } else {
+        fallbackCopy(text, btn);
+      }
+      
+      return false;
+    };
+  }
+  
+  function fallbackCopy(text, btn) {
+    var textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.top = '-9999px';
+    textarea.style.left = '-9999px';
+    document.body.appendChild(textarea);
+    
+    textarea.select();
+    
+    try {
+      document.execCommand('copy');
+      showCopied(btn);
+    } catch (err) {
+      console.error('Copy failed:', err);
+    }
+    
+    document.body.removeChild(textarea);
+  }
+  
+  function showCopied(btn) {
+    btn.classList.add('copied');
+    setTimeout(function() {
+      btn.classList.remove('copied');
+    }, 2000);
+  }
+  
+  function highlightKQLLine(text, container) {
+    var keywords = ['where', 'extend', 'project', 'summarize', 'by', 'in', 'contains',
+                    'has_any', 'and', 'or', 'not', 'let', 'join', 'on', 'union',
+                    'parse_json', 'tostring', 'toint', 'todouble', 'tobool', 'toscalar',
+                    'distinct', 'top', 'sort', 'limit', 'take', 'count', 'as'];
+    
+    var remaining = text;
+    
+    while (remaining.length > 0) {
+      var matched = false;
+      
+      // Check for strings
+      if (remaining[0] === '"' || remaining[0] === "'") {
+        var quote = remaining[0];
+        var endIndex = 1;
+        while (endIndex < remaining.length && remaining[endIndex] !== quote) {
+          endIndex++;
+        }
+        if (endIndex < remaining.length) endIndex++;
         
-        if (match && match.index === 0) {
-          const matchText = match[0];
+        var span = document.createElement('span');
+        span.className = 'hl-string';
+        span.textContent = remaining.substring(0, endIndex);
+        container.appendChild(span);
+        remaining = remaining.substring(endIndex);
+        matched = true;
+      }
+      
+      // Check for words
+      if (!matched && /[a-zA-Z_]/.test(remaining[0])) {
+        var wordMatch = remaining.match(/^[a-zA-Z_][a-zA-Z0-9_]*/);
+        if (wordMatch) {
+          var word = wordMatch[0];
+          var isKeyword = false;
           
-          if (pattern.class) {
-            // Direct class assignment
-            const span = document.createElement('span');
-            span.className = pattern.class;
-            span.textContent = matchText;
-            container.appendChild(span);
-          } else {
-            // Check if it's a keyword or function
-            const nextChar = text[position + matchText.length];
-            if (nextChar === '(' && matchText !== 'if' && matchText !== 'where') {
-              // It's a function
-              const span = document.createElement('span');
-              span.className = 'hl-function';
-              span.textContent = matchText;
-              container.appendChild(span);
-            } else if (keywords.has(matchText.toLowerCase())) {
-              // It's a keyword
-              const span = document.createElement('span');
-              span.className = 'hl-keyword';
-              span.textContent = matchText;
-              container.appendChild(span);
-            } else if (matchText[0] === matchText[0].toUpperCase()) {
-              // Capitalized word - likely a property/type
-              const span = document.createElement('span');
-              span.className = 'hl-property';
-              span.textContent = matchText;
-              container.appendChild(span);
-            } else {
-              // Regular text
-              container.appendChild(document.createTextNode(matchText));
+          for (var k = 0; k < keywords.length; k++) {
+            if (word.toLowerCase() === keywords[k]) {
+              isKeyword = true;
+              break;
             }
           }
           
-          position += matchText.length;
+          if (isKeyword) {
+            var span = document.createElement('span');
+            span.className = 'hl-keyword';
+            span.textContent = word;
+            container.appendChild(span);
+          } else if (remaining[word.length] === '(') {
+            var span = document.createElement('span');
+            span.className = 'hl-function';
+            span.textContent = word;
+            container.appendChild(span);
+          } else if (word[0] === word[0].toUpperCase()) {
+            var span = document.createElement('span');
+            span.className = 'hl-property';
+            span.textContent = word;
+            container.appendChild(span);
+          } else {
+            container.appendChild(document.createTextNode(word));
+          }
+          
+          remaining = remaining.substring(word.length);
           matched = true;
-          break;
         }
       }
       
-      // If no pattern matched, consume one character
+      // Check for numbers
+      if (!matched && /\d/.test(remaining[0])) {
+        var numMatch = remaining.match(/^\d+\.?\d*/);
+        if (numMatch) {
+          var span = document.createElement('span');
+          span.className = 'hl-number';
+          span.textContent = numMatch[0];
+          container.appendChild(span);
+          remaining = remaining.substring(numMatch[0].length);
+          matched = true;
+        }
+      }
+      
+      // Check for operators
+      if (!matched && /[=<>!|&+\-*/%]/.test(remaining[0])) {
+        var opMatch = remaining.match(/^[=<>!|&+\-*/%]+/);
+        if (opMatch) {
+          var span = document.createElement('span');
+          span.className = 'hl-operator';
+          span.textContent = opMatch[0];
+          container.appendChild(span);
+          remaining = remaining.substring(opMatch[0].length);
+          matched = true;
+        }
+      }
+      
+      // Default: single character
       if (!matched) {
-        container.appendChild(document.createTextNode(text[position]));
-        position++;
+        container.appendChild(document.createTextNode(remaining[0]));
+        remaining = remaining.substring(1);
       }
     }
   }
   
-  // Language name formatter
   function formatLanguage(lang) {
-    const langMap = {
+    var langMap = {
       'js': 'JavaScript',
       'javascript': 'JavaScript',
       'ts': 'TypeScript',
@@ -512,7 +505,11 @@ document.addEventListener('DOMContentLoaded', function() {
     return langMap[lang] || lang.toUpperCase();
   }
   
-  // Run the processing
-  setTimeout(processCodeBlocks, 100);
-});
+  // Wait for DOM to be ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    setTimeout(init, 100);
+  }
+})();
 </script>
