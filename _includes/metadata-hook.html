@@ -1,7 +1,7 @@
 <!-- Ask Dark Reader not to modify this site -->
 <meta name="darkreader-lock">
 
-<!-- Bulletproof version that avoids all minification issues -->
+<!-- Debug version to understand what's happening -->
 <style>
 .custom-code-block {
   position: relative;
@@ -191,28 +191,90 @@
 </style>
 
 <script>
-// Bulletproof initialization using immediate execution and interval checking
-// This avoids any DOM event listeners that might cause parsing issues
 (function() {
-  var processAttempts = 0;
-  var maxAttempts = 50;
+  console.log('Code enhancement script starting...');
   
-  function tryProcess() {
-    processAttempts++;
+  var attempts = 0;
+  var maxAttempts = 50;
+  var foundBlocks = false;
+  
+  function checkAndProcess() {
+    attempts++;
     
-    // Check if DOM has code blocks to process
-    var codeBlocks = document.querySelectorAll('pre > code');
-    
-    if (codeBlocks && codeBlocks.length > 0) {
-      // Process all code blocks
-      for (var i = 0; i < codeBlocks.length; i++) {
-        processCodeBlock(codeBlocks[i]);
+    // Debug: Log what we're looking for
+    if (attempts === 1) {
+      console.log('Looking for code blocks...');
+      
+      // Let's see what selectors might work
+      console.log('Checking various selectors:');
+      console.log('pre > code elements:', document.querySelectorAll('pre > code').length);
+      console.log('pre code elements:', document.querySelectorAll('pre code').length);
+      console.log('.highlight elements:', document.querySelectorAll('.highlight').length);
+      console.log('.language-kusto elements:', document.querySelectorAll('.language-kusto').length);
+      console.log('.language-kql elements:', document.querySelectorAll('.language-kql').length);
+      console.log('div.highlight > pre.highlight > code:', document.querySelectorAll('div.highlight > pre.highlight > code').length);
+      console.log('figure.highlight elements:', document.querySelectorAll('figure.highlight').length);
+      
+      // Log the actual structure of any code blocks found
+      var allPres = document.querySelectorAll('pre');
+      console.log('Total <pre> elements found:', allPres.length);
+      
+      if (allPres.length > 0) {
+        console.log('First <pre> element structure:', allPres[0].outerHTML.substring(0, 200));
+        console.log('Parent of first <pre>:', allPres[0].parentElement ? allPres[0].parentElement.outerHTML.substring(0, 200) : 'No parent');
       }
-      return true;
     }
     
-    // Stop trying after max attempts (5 seconds)
-    if (processAttempts >= maxAttempts) {
+    // Try multiple possible selectors
+    var selectors = [
+      'pre > code',
+      'pre code',
+      'div.highlight > pre.highlight > code',
+      'figure.highlight > pre > code',
+      '.highlighter-rouge pre code',
+      '.language-kusto',
+      '.language-kql'
+    ];
+    
+    var codeBlocks = null;
+    var usedSelector = null;
+    
+    for (var i = 0; i < selectors.length; i++) {
+      var found = document.querySelectorAll(selectors[i]);
+      if (found && found.length > 0) {
+        codeBlocks = found;
+        usedSelector = selectors[i];
+        break;
+      }
+    }
+    
+    if (codeBlocks && codeBlocks.length > 0 && !foundBlocks) {
+      foundBlocks = true;
+      console.log('Found ' + codeBlocks.length + ' code blocks using selector: ' + usedSelector);
+      
+      // Process each code block
+      for (var j = 0; j < codeBlocks.length; j++) {
+        console.log('Processing code block ' + (j + 1) + '...');
+        try {
+          processCodeBlock(codeBlocks[j]);
+          console.log('Successfully processed code block ' + (j + 1));
+        } catch (error) {
+          console.error('Error processing code block ' + (j + 1) + ':', error);
+        }
+      }
+      
+      return true; // Stop checking
+    }
+    
+    // Log progress occasionally
+    if (attempts % 10 === 0) {
+      console.log('Still looking for code blocks... (attempt ' + attempts + ')');
+    }
+    
+    // Stop after max attempts
+    if (attempts >= maxAttempts) {
+      console.log('Stopped looking for code blocks after ' + maxAttempts + ' attempts');
+      console.log('Page might not have any code blocks, or they use an unexpected structure');
       return true;
     }
     
@@ -221,12 +283,34 @@
   
   function processCodeBlock(codeElement) {
     // Skip if already processed
-    if (codeElement.closest('.custom-code-block')) return;
+    if (codeElement.closest('.custom-code-block')) {
+      console.log('Code block already processed, skipping');
+      return;
+    }
+    
+    console.log('Code element class:', codeElement.className);
+    console.log('Code element parent:', codeElement.parentElement ? codeElement.parentElement.tagName : 'No parent');
     
     var codeText = codeElement.textContent || '';
     var classes = codeElement.className || '';
-    var langMatch = classes.match(/language-([^\s]+)/);
-    var language = langMatch ? langMatch[1].toLowerCase() : 'text';
+    
+    // Try to extract language from various possible class patterns
+    var language = 'text';
+    var patterns = [
+      /language-([^\s]+)/,
+      /lang-([^\s]+)/,
+      /sourceCode\s+([^\s]+)/
+    ];
+    
+    for (var p = 0; p < patterns.length; p++) {
+      var match = classes.match(patterns[p]);
+      if (match) {
+        language = match[1].toLowerCase();
+        break;
+      }
+    }
+    
+    console.log('Detected language:', language);
     
     var lines = codeText.split('\n');
     if (lines[lines.length - 1] === '') {
@@ -256,18 +340,18 @@
     trafficLights.appendChild(dotYellow);
     trafficLights.appendChild(dotGreen);
     
-    // Create language label - avoiding angle brackets entirely
+    // Create language label
     var langLabel = document.createElement('span');
     langLabel.className = 'lang-label';
     langLabel.textContent = '// ' + formatLanguage(language);
     
-    // Create copy button
+    // Create copy button using DOM methods
     var copyBtn = document.createElement('button');
     copyBtn.type = 'button';
     copyBtn.className = 'copy-btn';
     copyBtn.setAttribute('aria-label', 'Copy code');
     
-    // Create SVG elements using DOM methods to completely avoid string parsing issues
+    // Create SVG elements
     var copySvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     copySvg.setAttribute('class', 'copy-icon');
     copySvg.setAttribute('viewBox', '0 0 24 24');
@@ -337,17 +421,33 @@
     wrapper.appendChild(header);
     wrapper.appendChild(container);
     
-    // Replace original
-    var originalPre = codeElement.parentElement;
-    if (originalPre && originalPre.parentElement) {
-      originalPre.parentElement.replaceChild(wrapper, originalPre);
+    // Find the element to replace
+    var elementToReplace = codeElement.parentElement;
+    
+    // Handle various Jekyll/theme structures
+    if (elementToReplace && elementToReplace.className && elementToReplace.className.includes('highlight')) {
+      // If parent is div.highlight, replace that
+      elementToReplace = elementToReplace.parentElement || elementToReplace;
+    } else if (elementToReplace && elementToReplace.tagName === 'PRE') {
+      // Standard pre > code structure
+      // Keep as is
+    } else {
+      // Unexpected structure
+      console.warn('Unexpected code block structure, attempting to replace anyway');
+    }
+    
+    // Replace the original element
+    if (elementToReplace && elementToReplace.parentElement) {
+      elementToReplace.parentElement.replaceChild(wrapper, elementToReplace);
+      console.log('Successfully replaced code block in DOM');
+    } else {
+      console.error('Could not find parent element to replace');
     }
     
     // Setup copy handler
     copyBtn.onclick = function(e) {
       e.preventDefault();
       
-      // Try modern clipboard API
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(codeText).then(function() {
           copyBtn.classList.add('copied');
@@ -429,23 +529,25 @@
             }
           }
           
-          var span = document.createElement('span');
-          
           if (isKeyword) {
+            var span = document.createElement('span');
             span.className = 'hl-keyword';
-          } else if (remaining[word.length] === '(') {
-            span.className = 'hl-function';
-          } else if (word[0] === word[0].toUpperCase() && word[0].match(/[A-Z]/)) {
-            span.className = 'hl-property';
-          } else {
-            span = document.createTextNode(word);
-          }
-          
-          if (span.nodeType !== 3) {
             span.textContent = word;
+            container.appendChild(span);
+          } else if (remaining[word.length] === '(') {
+            var span = document.createElement('span');
+            span.className = 'hl-function';
+            span.textContent = word;
+            container.appendChild(span);
+          } else if (word[0] === word[0].toUpperCase() && word[0].match(/[A-Z]/)) {
+            var span = document.createElement('span');
+            span.className = 'hl-property';
+            span.textContent = word;
+            container.appendChild(span);
+          } else {
+            container.appendChild(document.createTextNode(word));
           }
           
-          container.appendChild(span);
           remaining = remaining.substring(word.length);
           matched = true;
         }
@@ -477,7 +579,7 @@
         }
       }
       
-      // Default single character
+      // Default: single character
       if (!matched) {
         container.appendChild(document.createTextNode(remaining[0]));
         remaining = remaining.substring(1);
@@ -508,10 +610,10 @@
     return langMap[lang] || lang.toUpperCase();
   }
   
-  // Start checking for code blocks to process
-  var checkInterval = setInterval(function() {
-    if (tryProcess()) {
-      clearInterval(checkInterval);
+  // Start checking for code blocks
+  var interval = setInterval(function() {
+    if (checkAndProcess()) {
+      clearInterval(interval);
     }
   }, 100);
 })();
