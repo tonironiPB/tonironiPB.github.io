@@ -287,269 +287,56 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+  console.log('Script loaded and DOM ready');
+  
   // Process all code blocks
   function processCodeBlocks() {
-    document.querySelectorAll('pre > code').forEach(function(codeElement) {
+    console.log('Starting processCodeBlocks');
+    const codeBlocks = document.querySelectorAll('pre > code');
+    console.log('Found code blocks:', codeBlocks.length);
+    
+    codeBlocks.forEach(function(codeElement, index) {
+      console.log(`Processing block ${index}:`, codeElement);
+      
       // Skip if already processed
-      if (codeElement.closest('.custom-code-block')) return;
+      if (codeElement.closest('.custom-code-block')) {
+        console.log('Block already processed, skipping');
+        return;
+      }
       
       // Get the code text and language
       const codeText = codeElement.textContent;
+      console.log('Code text length:', codeText.length);
+      console.log('First 100 chars:', codeText.substring(0, 100));
+      
       const langClass = Array.from(codeElement.classList)
         .find(cls => cls.startsWith('language-')) || 'language-text';
       const language = langClass.replace('language-', '').toLowerCase();
+      console.log('Language detected:', language);
       
       // Split into lines
       const lines = codeText.split('\n');
+      console.log('Number of lines:', lines.length);
+      
       // Remove trailing empty line if present
       if (lines[lines.length - 1] === '') {
         lines.pop();
+        console.log('Removed trailing empty line');
       }
       
+      // [Rest of your code continues here...]
       // Create wrapper
       const wrapper = document.createElement('div');
       wrapper.className = 'custom-code-block';
       
-      // Create header
-      const header = document.createElement('div');
-      header.className = 'code-header';
-      
-      const trafficLights = document.createElement('div');
-      trafficLights.className = 'traffic-lights';
-      trafficLights.innerHTML = `
-        <span class="dot red"></span>
-        <span class="dot yellow"></span>
-        <span class="dot green"></span>
-      `;
-      
-      const langLabel = document.createElement('span');
-      langLabel.className = 'lang-label';
-      langLabel.textContent = '</> ' + formatLanguage(language);
-      
-      const copyBtn = document.createElement('button');
-      copyBtn.type = 'button';
-      copyBtn.className = 'copy-btn';
-      copyBtn.setAttribute('aria-label', 'Copy code');
-      
-      // Pre-create both icons inside the button to avoid innerHTML changes later
-      copyBtn.innerHTML = `
-        <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-        </svg>
-        <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>
-      `;
-      
-      header.appendChild(trafficLights);
-      header.appendChild(langLabel);
-      header.appendChild(copyBtn);
-      
-      // Create code container
-      const container = document.createElement('div');
-      container.className = 'code-container';
-      
-      const pre = document.createElement('pre');
-      pre.className = 'code-pre';
-      
-      const code = document.createElement('code');
-      code.className = 'code-content ' + langClass;
-      
-      // Process each line
-      lines.forEach(function(line) {
-        const lineDiv = document.createElement('div');
-        lineDiv.className = 'code-line';
-        
-        // Apply syntax highlighting for KQL
-        if (language === 'kql' || language === 'kusto') {
-          highlightLine(line, lineDiv);
-        } else {
-          lineDiv.textContent = line;
-        }
-        
-        code.appendChild(lineDiv);
-      });
-      
-      // Assemble
-      pre.appendChild(code);
-      container.appendChild(pre);
-      wrapper.appendChild(header);
-      wrapper.appendChild(container);
-      
-      // Replace original
-      const originalPre = codeElement.parentElement;
-      originalPre.parentElement.replaceChild(wrapper, originalPre);
-      
-      // Copy functionality - Visual icon swap without DOM changes
-      copyBtn.addEventListener('click', async function(e) {
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        
-        // Try modern clipboard API first
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          try {
-            await navigator.clipboard.writeText(codeText);
-            
-            // Show checkmark by adding class (no DOM changes)
-            copyBtn.classList.add('copied');
-            
-            // Revert after 2 seconds
-            setTimeout(() => {
-              copyBtn.classList.remove('copied');
-            }, 2000);
-            
-          } catch (err) {
-            console.warn('Copy failed, trying fallback:', err);
-            fallbackCopyMinimal();
-          }
-        } else {
-          fallbackCopyMinimal();
-        }
-        
-        function fallbackCopyMinimal() {
-          // Create textarea completely outside viewport
-          const textarea = document.createElement('textarea');
-          textarea.value = codeText;
-          textarea.style.position = 'fixed';
-          textarea.style.top = '-9999px';
-          textarea.style.left = '-9999px';
-          textarea.setAttribute('aria-hidden', 'true');
-          textarea.setAttribute('tabindex', '-1');
-          
-          document.body.appendChild(textarea);
-          
-          // Select and copy
-          textarea.select();
-          textarea.setSelectionRange(0, textarea.value.length);
-          
-          try {
-            document.execCommand('copy');
-            
-            // Show success
-            copyBtn.classList.add('copied');
-            setTimeout(() => {
-              copyBtn.classList.remove('copied');
-            }, 2000);
-            
-          } catch (err) {
-            console.error('Copy failed:', err);
-          }
-          
-          // Remove textarea immediately
-          document.body.removeChild(textarea);
-        }
-        
-        return false;
-      });
+      // [Continue with the rest of your original code...]
     });
   }
   
-  // KQL syntax highlighting using DOM manipulation
-  function highlightLine(text, container) {
-    // KQL keywords
-    const keywords = new Set([
-      'where', 'extend', 'project', 'summarize', 'by', 'in', 'contains',
-      'has_any', 'and', 'or', 'not', 'let', 'join', 'on', 'union',
-      'parse_json', 'tostring', 'toint', 'todouble', 'tobool', 'toscalar',
-      'distinct', 'top', 'sort', 'limit', 'take', 'count', 'as'
-    ]);
-    
-    // Token patterns
-    const tokenPatterns = [
-      { regex: /\/\/.*$/, class: 'hl-comment' },
-      { regex: /"[^"]*"|'[^']*'/, class: 'hl-string' },
-      { regex: /\b\d+\.?\d*\b/, class: 'hl-number' },
-      { regex: /[=<>!]+|[|&]+|[+\-*/%]/, class: 'hl-operator' },
-      { regex: /[{}()\[\],;]/, class: 'hl-punctuation' },
-      { regex: /\b[a-zA-Z_][a-zA-Z0-9_]*\b/, class: null } // Words - check if keyword/function
-    ];
-    
-    let position = 0;
-    
-    while (position < text.length) {
-      let matched = false;
-      
-      // Try each pattern
-      for (const pattern of tokenPatterns) {
-        const substring = text.substring(position);
-        const match = substring.match(pattern.regex);
-        
-        if (match && match.index === 0) {
-          const matchText = match[0];
-          
-          if (pattern.class) {
-            // Direct class assignment
-            const span = document.createElement('span');
-            span.className = pattern.class;
-            span.textContent = matchText;
-            container.appendChild(span);
-          } else {
-            // Check if it's a keyword or function
-            const nextChar = text[position + matchText.length];
-            if (nextChar === '(' && matchText !== 'if' && matchText !== 'where') {
-              // It's a function
-              const span = document.createElement('span');
-              span.className = 'hl-function';
-              span.textContent = matchText;
-              container.appendChild(span);
-            } else if (keywords.has(matchText.toLowerCase())) {
-              // It's a keyword
-              const span = document.createElement('span');
-              span.className = 'hl-keyword';
-              span.textContent = matchText;
-              container.appendChild(span);
-            } else if (matchText[0] === matchText[0].toUpperCase()) {
-              // Capitalized word - likely a property/type
-              const span = document.createElement('span');
-              span.className = 'hl-property';
-              span.textContent = matchText;
-              container.appendChild(span);
-            } else {
-              // Regular text
-              container.appendChild(document.createTextNode(matchText));
-            }
-          }
-          
-          position += matchText.length;
-          matched = true;
-          break;
-        }
-      }
-      
-      // If no pattern matched, consume one character
-      if (!matched) {
-        container.appendChild(document.createTextNode(text[position]));
-        position++;
-      }
-    }
-  }
-  
-  // Language name formatter
-  function formatLanguage(lang) {
-    const langMap = {
-      'js': 'JavaScript',
-      'javascript': 'JavaScript',
-      'ts': 'TypeScript',
-      'typescript': 'TypeScript',
-      'py': 'Python',
-      'python': 'Python',
-      'kql': 'KQL',
-      'kusto': 'KQL',
-      'html': 'HTML',
-      'css': 'CSS',
-      'json': 'JSON',
-      'bash': 'Bash',
-      'sql': 'SQL',
-      'ruby': 'Ruby',
-      'java': 'Java',
-      'go': 'Go'
-    };
-    
-    return langMap[lang] || lang.toUpperCase();
-  }
+  // [Include your highlightLine and formatLanguage functions here]
   
   // Run the processing
+  console.log('Setting timeout for processCodeBlocks');
   setTimeout(processCodeBlocks, 100);
 });
 </script>
