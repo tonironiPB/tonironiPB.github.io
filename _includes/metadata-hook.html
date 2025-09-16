@@ -1,7 +1,9 @@
-<!-- Minification-safe version of metadata-hook.html -->
+<!-- Ask Dark Reader not to modify this site -->
 <meta name="darkreader-lock">
 
+<!-- Minification-safe version with proper escaping -->
 <style>
+/* Main Code Block Container */
 .custom-code-block {
   position: relative;
   margin: 1.5rem 0;
@@ -13,6 +15,7 @@
   line-height: 1.5;
 }
 
+/* Header Bar with Controls */
 .code-header {
   position: relative;
   height: 2.5rem;
@@ -23,6 +26,7 @@
   padding: 0 1rem;
 }
 
+/* Traffic lights */
 .traffic-lights {
   position: absolute;
   left: 0.5rem;
@@ -46,6 +50,7 @@
 .dot.yellow { background: #ffbd2e; }
 .dot.green { background: #28ca42; }
 
+/* Language label */
 .lang-label {
   color: rgba(248, 248, 242, 0.5);
   font-size: 0.8rem;
@@ -53,6 +58,7 @@
   letter-spacing: 0.025em;
 }
 
+/* Copy button */
 .copy-btn {
   position: absolute;
   right: 0.5rem;
@@ -107,21 +113,16 @@
 }
 
 @keyframes subtle-bounce {
-  0% {
-    transform: scale(0.5) rotate(-90deg);
-  }
-  50% {
-    transform: scale(1.1) rotate(5deg);
-  }
-  100% {
-    transform: scale(1) rotate(0deg);
-  }
+  0% { transform: scale(0.5) rotate(-90deg); }
+  50% { transform: scale(1.1) rotate(5deg); }
+  100% { transform: scale(1) rotate(0deg); }
 }
 
 .copy-btn.copied .check-icon {
   animation: subtle-bounce 0.4s ease-out;
 }
 
+/* Code Display Area */
 .code-container {
   position: relative;
   overflow-x: auto;
@@ -171,58 +172,23 @@
   content: '\00a0';
 }
 
-.hl-keyword { 
-  color: #C792EA;
-  font-weight: 500;
-}
-.hl-string { 
-  color: #C3E88D;
-}
-.hl-function { 
-  color: #82AAFF;
-}
-.hl-comment { 
-  color: #546E7A;
-  font-style: italic;
-  opacity: 0.8;
-}
-.hl-number { 
-  color: #F78C6C;
-}
-.hl-operator { 
-  color: #89DDFF;
-}
-.hl-property { 
-  color: #FFCB6B;
-}
-.hl-punctuation { 
-  color: #AABFC9;
-}
+/* Syntax Highlighting */
+.hl-keyword { color: #C792EA; font-weight: 500; }
+.hl-string { color: #C3E88D; }
+.hl-function { color: #82AAFF; }
+.hl-comment { color: #546E7A; font-style: italic; opacity: 0.8; }
+.hl-number { color: #F78C6C; }
+.hl-operator { color: #89DDFF; }
+.hl-property { color: #FFCB6B; }
+.hl-punctuation { color: #AABFC9; }
 
-[data-theme="light"] .custom-code-block {
-  background: #f8f8f8;
-}
-
-[data-theme="light"] .code-line::before {
-  color: rgba(0, 0, 0, 0.3);
-}
-
-[data-theme="light"] .lang-label {
-  color: rgba(0, 0, 0, 0.5);
-}
-
-[data-theme="light"] .copy-btn {
-  color: rgba(0, 0, 0, 0.4);
-}
-
-[data-theme="light"] .copy-btn:hover {
-  color: rgba(0, 0, 0, 0.7);
-}
-
-[data-theme="light"] .code-content {
-  color: #2e3440;
-}
-
+/* Light Theme Support */
+[data-theme="light"] .custom-code-block { background: #f8f8f8; }
+[data-theme="light"] .code-line::before { color: rgba(0, 0, 0, 0.3); }
+[data-theme="light"] .lang-label { color: rgba(0, 0, 0, 0.5); }
+[data-theme="light"] .copy-btn { color: rgba(0, 0, 0, 0.4); }
+[data-theme="light"] .copy-btn:hover { color: rgba(0, 0, 0, 0.7); }
+[data-theme="light"] .code-content { color: #2e3440; }
 [data-theme="light"] .hl-keyword { color: #d73a49; }
 [data-theme="light"] .hl-string { color: #032f62; }
 [data-theme="light"] .hl-function { color: #6f42c1; }
@@ -236,6 +202,7 @@
 (function() {
   'use strict';
   
+  // Initialize when DOM is ready
   function init() {
     var codeBlocks = document.querySelectorAll('pre > code');
     if (!codeBlocks || codeBlocks.length === 0) return;
@@ -246,6 +213,7 @@
   }
   
   function processCodeBlock(codeElement) {
+    // Skip if already processed
     if (codeElement.closest('.custom-code-block')) return;
     
     var codeText = codeElement.textContent || '';
@@ -253,17 +221,20 @@
     var langMatch = classes.match(/language-([^\s]+)/);
     var language = langMatch ? langMatch[1].toLowerCase() : 'text';
     
+    // Split into lines and remove trailing empty line
     var lines = codeText.split('\n');
     if (lines[lines.length - 1] === '') {
       lines.pop();
     }
     
+    // Create wrapper structure
     var wrapper = document.createElement('div');
     wrapper.className = 'custom-code-block';
     
     var header = document.createElement('div');
     header.className = 'code-header';
     
+    // Create traffic lights
     var trafficLights = document.createElement('div');
     trafficLights.className = 'traffic-lights';
     
@@ -278,30 +249,35 @@
     trafficLights.appendChild(dotYellow);
     trafficLights.appendChild(dotGreen);
     
+    // Create language label
     var langLabel = document.createElement('span');
     langLabel.className = 'lang-label';
-    langLabel.textContent = '</> ' + formatLanguage(language);
+    langLabel.textContent = '<' + '/> ' + formatLanguage(language);
     
+    // Create copy button with properly escaped SVG
     var copyBtn = document.createElement('button');
     copyBtn.type = 'button';
     copyBtn.className = 'copy-btn';
     copyBtn.setAttribute('aria-label', 'Copy code');
     
-    var copyIcon = '<svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">';
-    copyIcon += '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>';
-    copyIcon += '<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>';
-    copyIcon += '</svg>';
+    // Build SVG strings with concatenation to avoid escaping issues
+    var copyIconSvg = '<svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">';
+    copyIconSvg += '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"><' + '/rect>';
+    copyIconSvg += '<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"><' + '/path>';
+    copyIconSvg += '<' + '/svg>';
     
-    var checkIcon = '<svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">';
-    checkIcon += '<polyline points="20 6 9 17 4 12"></polyline>';
-    checkIcon += '</svg>';
+    var checkIconSvg = '<svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">';
+    checkIconSvg += '<polyline points="20 6 9 17 4 12"><' + '/polyline>';
+    checkIconSvg += '<' + '/svg>';
     
-    copyBtn.innerHTML = copyIcon + checkIcon;
+    copyBtn.innerHTML = copyIconSvg + checkIconSvg;
     
+    // Assemble header
     header.appendChild(trafficLights);
     header.appendChild(langLabel);
     header.appendChild(copyBtn);
     
+    // Create code container
     var container = document.createElement('div');
     container.className = 'code-container';
     
@@ -311,6 +287,7 @@
     var code = document.createElement('code');
     code.className = 'code-content ' + 'language-' + language;
     
+    // Process each line
     for (var j = 0; j < lines.length; j++) {
       var lineDiv = document.createElement('div');
       lineDiv.className = 'code-line';
@@ -324,16 +301,19 @@
       code.appendChild(lineDiv);
     }
     
+    // Assemble structure
     pre.appendChild(code);
     container.appendChild(pre);
     wrapper.appendChild(header);
     wrapper.appendChild(container);
     
+    // Replace original element
     var originalPre = codeElement.parentElement;
     if (originalPre && originalPre.parentElement) {
       originalPre.parentElement.replaceChild(wrapper, originalPre);
     }
     
+    // Setup copy functionality
     setupCopyButton(copyBtn, codeText);
   }
   
@@ -509,6 +489,7 @@
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
+    // Give Jekyll time to render the page
     setTimeout(init, 100);
   }
 })();
