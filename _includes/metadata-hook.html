@@ -1,7 +1,5 @@
-<!-- Ask Dark Reader not to modify this site -->
+<!-- Complete metadata-hook.html file - Copy this ENTIRE file -->
 <meta name="darkreader-lock">
-
-<!-- This version uses DOM manipulation to avoid HTML escaping issues -->
 
 <style>
 /* ===== Main Code Block Container ===== */
@@ -12,7 +10,7 @@
   overflow: hidden;
   background: #282a36;
   font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
-  font-size: 1rem; /* Increased from 0.875rem (14px) to 1rem (16px) */
+  font-size: 1rem;
   line-height: 1.5;
 }
 
@@ -30,7 +28,7 @@
 /* Traffic lights on the left */
 .traffic-lights {
   position: absolute;
-  left: 0.5rem; /* Made symmetrical with copy button - 0.5rem from edge */
+  left: 0.5rem;
   display: flex;
   gap: 8px;
 }
@@ -152,7 +150,7 @@
 /* Code element with line numbers */
 .code-content {
   display: block;
-  padding: 0.5rem 1rem 1rem 2.2rem; /* Reduced left padding from 2.8rem to bring code closer to numbers */
+  padding: 0.5rem 1rem 1rem 2.2rem;
   color: #f8f8f2;
   white-space: pre;
   line-height: 1.5;
@@ -173,82 +171,48 @@
 .code-line::before {
   content: counter(line);
   position: absolute;
-  left: -2.3rem; /* Moved back right from -3.2rem - numbers closer to their natural position */
-  width: 2rem; /* Keep width the same */
+  left: -2.3rem;
+  width: 2rem;
   text-align: right;
   color: rgba(248, 248, 242, 0.3);
   user-select: none;
   pointer-events: none;
-  padding-right: 0.5rem; /* Reduced slightly from 0.7rem for tighter spacing */
+  padding-right: 0.5rem;
 }
 
 /* Empty lines need special handling */
 .code-line:empty::after {
-  content: '\00a0'; /* Non-breaking space to maintain height */
+  content: '\00a0';
 }
 
 /* ===== Syntax Highlighting Colors ===== */
-/* Subtle & Professional Color Scheme - Optimized for readability */
-
-/* Dark theme colors - muted and harmonious */
 .hl-keyword { 
-  color: #C792EA;  /* Soft purple - distinguishable but not jarring */
+  color: #C792EA;
   font-weight: 500;
 }
 .hl-string { 
-  color: #C3E88D;  /* Soft green - easy on the eyes for text literals */
+  color: #C3E88D;
 }
 .hl-function { 
-  color: #82AAFF;  /* Muted blue - clear but not overwhelming */
+  color: #82AAFF;
 }
 .hl-comment { 
-  color: #546E7A;  /* Dark gray-blue - readable but clearly secondary */
+  color: #546E7A;
   font-style: italic;
   opacity: 0.8;
 }
 .hl-number { 
-  color: #F78C6C;  /* Soft coral - visible without being bright */
+  color: #F78C6C;
 }
 .hl-operator { 
-  color: #89DDFF;  /* Soft cyan - structural without dominating */
+  color: #89DDFF;
 }
 .hl-property { 
-  color: #FFCB6B;  /* Muted yellow - warm but not glaring */
+  color: #FFCB6B;
 }
 .hl-punctuation { 
-  color: #AABFC9;  /* Light gray - present but unobtrusive */
+  color: #AABFC9;
 }
-
-/* Alternative Subtle Schemes (uncomment the one you prefer):
-
-// Gruvbox Dark (Very readable, warm tones)
-.hl-keyword { color: #FB4934; }     // Soft red
-.hl-string { color: #B8BB26; }      // Olive green
-.hl-function { color: #FABD2F; }    // Soft gold
-.hl-comment { color: #928374; font-style: italic; } // Gray
-.hl-number { color: #D3869B; }      // Soft purple
-.hl-operator { color: #8EC07C; }    // Aqua green
-.hl-property { color: #FE8019; }    // Soft orange
-
-// Nord Theme (Cool, professional, very easy on eyes)
-.hl-keyword { color: #81A1C1; }     // Arctic blue
-.hl-string { color: #A3BE8C; }      // Aurora green
-.hl-function { color: #88C0D0; }    // Frost blue
-.hl-comment { color: #616E88; font-style: italic; } // Polar night
-.hl-number { color: #B48EAD; }      // Aurora purple
-.hl-operator { color: #81A1C1; }    // Arctic blue
-.hl-property { color: #8FBCBB; }    // Frost cyan
-
-// Solarized Dark (Scientific, proven readability)
-.hl-keyword { color: #859900; }     // Green
-.hl-string { color: #2AA198; }      // Cyan
-.hl-function { color: #268BD2; }    // Blue
-.hl-comment { color: #586E75; font-style: italic; } // Gray
-.hl-number { color: #D33682; }      // Magenta
-.hl-operator { color: #93A1A1; }    // Light gray
-.hl-property { color: #B58900; }    // Yellow
-
-*/
 
 /* ===== Light Theme Support ===== */
 [data-theme="light"] .custom-code-block {
@@ -275,7 +239,6 @@
   color: #2e3440;
 }
 
-/* Light theme syntax colors */
 [data-theme="light"] .hl-keyword { color: #d73a49; }
 [data-theme="light"] .hl-string { color: #032f62; }
 [data-theme="light"] .hl-function { color: #6f42c1; }
@@ -287,56 +250,269 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  console.log('Script loaded and DOM ready');
-  
   // Process all code blocks
   function processCodeBlocks() {
-    console.log('Starting processCodeBlocks');
-    const codeBlocks = document.querySelectorAll('pre > code');
-    console.log('Found code blocks:', codeBlocks.length);
-    
-    codeBlocks.forEach(function(codeElement, index) {
-      console.log(`Processing block ${index}:`, codeElement);
-      
+    document.querySelectorAll('pre > code').forEach(function(codeElement) {
       // Skip if already processed
-      if (codeElement.closest('.custom-code-block')) {
-        console.log('Block already processed, skipping');
-        return;
-      }
+      if (codeElement.closest('.custom-code-block')) return;
       
       // Get the code text and language
       const codeText = codeElement.textContent;
-      console.log('Code text length:', codeText.length);
-      console.log('First 100 chars:', codeText.substring(0, 100));
-      
       const langClass = Array.from(codeElement.classList)
         .find(cls => cls.startsWith('language-')) || 'language-text';
       const language = langClass.replace('language-', '').toLowerCase();
-      console.log('Language detected:', language);
       
       // Split into lines
       const lines = codeText.split('\n');
-      console.log('Number of lines:', lines.length);
-      
       // Remove trailing empty line if present
       if (lines[lines.length - 1] === '') {
         lines.pop();
-        console.log('Removed trailing empty line');
       }
       
-      // [Rest of your code continues here...]
       // Create wrapper
       const wrapper = document.createElement('div');
       wrapper.className = 'custom-code-block';
       
-      // [Continue with the rest of your original code...]
+      // Create header
+      const header = document.createElement('div');
+      header.className = 'code-header';
+      
+      const trafficLights = document.createElement('div');
+      trafficLights.className = 'traffic-lights';
+      trafficLights.innerHTML = `
+        <span class="dot red"></span>
+        <span class="dot yellow"></span>
+        <span class="dot green"></span>
+      `;
+      
+      const langLabel = document.createElement('span');
+      langLabel.className = 'lang-label';
+      langLabel.textContent = '</> ' + formatLanguage(language);
+      
+      const copyBtn = document.createElement('button');
+      copyBtn.type = 'button';
+      copyBtn.className = 'copy-btn';
+      copyBtn.setAttribute('aria-label', 'Copy code');
+      
+      // Pre-create both icons inside the button to avoid innerHTML changes later
+      copyBtn.innerHTML = `
+        <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        </svg>
+        <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      `;
+      
+      header.appendChild(trafficLights);
+      header.appendChild(langLabel);
+      header.appendChild(copyBtn);
+      
+      // Create code container
+      const container = document.createElement('div');
+      container.className = 'code-container';
+      
+      const pre = document.createElement('pre');
+      pre.className = 'code-pre';
+      
+      const code = document.createElement('code');
+      code.className = 'code-content ' + langClass;
+      
+      // Process each line
+      lines.forEach(function(line) {
+        const lineDiv = document.createElement('div');
+        lineDiv.className = 'code-line';
+        
+        // Apply syntax highlighting for KQL
+        if (language === 'kql' || language === 'kusto') {
+          highlightLine(line, lineDiv);
+        } else {
+          lineDiv.textContent = line;
+        }
+        
+        code.appendChild(lineDiv);
+      });
+      
+      // Assemble
+      pre.appendChild(code);
+      container.appendChild(pre);
+      wrapper.appendChild(header);
+      wrapper.appendChild(container);
+      
+      // Replace original
+      const originalPre = codeElement.parentElement;
+      originalPre.parentElement.replaceChild(wrapper, originalPre);
+      
+      // Copy functionality - Visual icon swap without DOM changes
+      copyBtn.addEventListener('click', async function(e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        
+        // Try modern clipboard API first
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          try {
+            await navigator.clipboard.writeText(codeText);
+            
+            // Show checkmark by adding class (no DOM changes)
+            copyBtn.classList.add('copied');
+            
+            // Revert after 2 seconds
+            setTimeout(() => {
+              copyBtn.classList.remove('copied');
+            }, 2000);
+            
+          } catch (err) {
+            console.warn('Copy failed, trying fallback:', err);
+            fallbackCopyMinimal();
+          }
+        } else {
+          fallbackCopyMinimal();
+        }
+        
+        function fallbackCopyMinimal() {
+          // Create textarea completely outside viewport
+          const textarea = document.createElement('textarea');
+          textarea.value = codeText;
+          textarea.style.position = 'fixed';
+          textarea.style.top = '-9999px';
+          textarea.style.left = '-9999px';
+          textarea.setAttribute('aria-hidden', 'true');
+          textarea.setAttribute('tabindex', '-1');
+          
+          document.body.appendChild(textarea);
+          
+          // Select and copy
+          textarea.select();
+          textarea.setSelectionRange(0, textarea.value.length);
+          
+          try {
+            document.execCommand('copy');
+            
+            // Show success
+            copyBtn.classList.add('copied');
+            setTimeout(() => {
+              copyBtn.classList.remove('copied');
+            }, 2000);
+            
+          } catch (err) {
+            console.error('Copy failed:', err);
+          }
+          
+          // Remove textarea immediately
+          document.body.removeChild(textarea);
+        }
+        
+        return false;
+      });
     });
   }
   
-  // [Include your highlightLine and formatLanguage functions here]
+  // KQL syntax highlighting using DOM manipulation
+  function highlightLine(text, container) {
+    // KQL keywords
+    const keywords = new Set([
+      'where', 'extend', 'project', 'summarize', 'by', 'in', 'contains',
+      'has_any', 'and', 'or', 'not', 'let', 'join', 'on', 'union',
+      'parse_json', 'tostring', 'toint', 'todouble', 'tobool', 'toscalar',
+      'distinct', 'top', 'sort', 'limit', 'take', 'count', 'as'
+    ]);
+    
+    // Token patterns
+    const tokenPatterns = [
+      { regex: /\/\/.*$/, class: 'hl-comment' },
+      { regex: /"[^"]*"|'[^']*'/, class: 'hl-string' },
+      { regex: /\b\d+\.?\d*\b/, class: 'hl-number' },
+      { regex: /[=<>!]+|[|&]+|[+\-*/%]/, class: 'hl-operator' },
+      { regex: /[{}()\[\],;]/, class: 'hl-punctuation' },
+      { regex: /\b[a-zA-Z_][a-zA-Z0-9_]*\b/, class: null } // Words - check if keyword/function
+    ];
+    
+    let position = 0;
+    
+    while (position < text.length) {
+      let matched = false;
+      
+      // Try each pattern
+      for (const pattern of tokenPatterns) {
+        const substring = text.substring(position);
+        const match = substring.match(pattern.regex);
+        
+        if (match && match.index === 0) {
+          const matchText = match[0];
+          
+          if (pattern.class) {
+            // Direct class assignment
+            const span = document.createElement('span');
+            span.className = pattern.class;
+            span.textContent = matchText;
+            container.appendChild(span);
+          } else {
+            // Check if it's a keyword or function
+            const nextChar = text[position + matchText.length];
+            if (nextChar === '(' && matchText !== 'if' && matchText !== 'where') {
+              // It's a function
+              const span = document.createElement('span');
+              span.className = 'hl-function';
+              span.textContent = matchText;
+              container.appendChild(span);
+            } else if (keywords.has(matchText.toLowerCase())) {
+              // It's a keyword
+              const span = document.createElement('span');
+              span.className = 'hl-keyword';
+              span.textContent = matchText;
+              container.appendChild(span);
+            } else if (matchText[0] === matchText[0].toUpperCase()) {
+              // Capitalized word - likely a property/type
+              const span = document.createElement('span');
+              span.className = 'hl-property';
+              span.textContent = matchText;
+              container.appendChild(span);
+            } else {
+              // Regular text
+              container.appendChild(document.createTextNode(matchText));
+            }
+          }
+          
+          position += matchText.length;
+          matched = true;
+          break;
+        }
+      }
+      
+      // If no pattern matched, consume one character
+      if (!matched) {
+        container.appendChild(document.createTextNode(text[position]));
+        position++;
+      }
+    }
+  }
+  
+  // Language name formatter
+  function formatLanguage(lang) {
+    const langMap = {
+      'js': 'JavaScript',
+      'javascript': 'JavaScript',
+      'ts': 'TypeScript',
+      'typescript': 'TypeScript',
+      'py': 'Python',
+      'python': 'Python',
+      'kql': 'KQL',
+      'kusto': 'KQL',
+      'html': 'HTML',
+      'css': 'CSS',
+      'json': 'JSON',
+      'bash': 'Bash',
+      'sql': 'SQL',
+      'ruby': 'Ruby',
+      'java': 'Java',
+      'go': 'Go'
+    };
+    
+    return langMap[lang] || lang.toUpperCase();
+  }
   
   // Run the processing
-  console.log('Setting timeout for processCodeBlocks');
   setTimeout(processCodeBlocks, 100);
 });
 </script>
